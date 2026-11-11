@@ -1,0 +1,24 @@
+# Linux (systemd user service): start panosync when you log in to your desktop.
+#
+#   mkdir -p ~/.config/systemd/user
+#   cp packaging/panosync.service ~/.config/systemd/user/
+#   systemctl --user daemon-reload
+#   systemctl --user enable --now panosync
+#
+# Logs: journalctl --user -u panosync -f
+#
+# ExecStart assumes install.sh's default location (~/.local/bin). If you installed
+# with cargo, change it to %h/.cargo/bin/panosync.
+
+[Unit]
+Description=panosync clipboard sync
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+ExecStart=%h/.local/bin/panosync
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target

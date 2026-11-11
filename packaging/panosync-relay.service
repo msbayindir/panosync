@@ -1,0 +1,42 @@
+# panosync-relay as a system service (for running the relay without Docker).
+#
+#   sudo install -m 755 panosync-relay /usr/local/bin/panosync-relay
+#   sudo cp packaging/panosync-relay.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now panosync-relay
+#
+# Logs: journalctl -u panosync-relay -f
+# The relay listens on plain HTTP; put a TLS reverse proxy in front of it (see docs/self-hosting.md).
+
+[Unit]
+Description=panosync relay
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/panosync-relay
+# The relay listens on all interfaces. If the reverse proxy runs on the same machine,
+# block this port from the outside with your firewall.
+Environment=PORT=8080
+Restart=on-failure
+RestartSec=5
+
+# The relay needs no files and no privileges.
+DynamicUser=yes
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+CapabilityBoundingSet=
+
+[Install]
+WantedBy=multi-user.target

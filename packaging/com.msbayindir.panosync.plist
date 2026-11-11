@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- macOS (launchd): start panosync when you log in.
+     1. Replace YOUR_USERNAME below with your user name (run `whoami`).
+        The path assumes install.sh's default location (~/.local/bin). If you installed
+        with cargo, use /Users/YOUR_USERNAME/.cargo/bin/panosync instead.
+     2. cp packaging/com.msbayindir.panosync.plist ~/Library/LaunchAgents/
+     3. launchctl load ~/Library/LaunchAgents/com.msbayindir.panosync.plist
+     Logs: tail -f /tmp/panosync.log -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.msbayindir.panosync</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/YOUR_USERNAME/.local/bin/panosync</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/tmp/panosync.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/panosync.log</string>
+</dict>
+</plist>

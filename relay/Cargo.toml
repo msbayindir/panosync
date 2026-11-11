@@ -1,0 +1,18 @@
+[package]
+name = "panosync-relay"
+description = "Relay server for panosync: forwards encrypted clipboard messages between devices"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+axum = { version = "0.8.9", features = ["ws"] }
+bytes = "1.12.1"
+futures-util = "0.3.34"
+serde = { version = "1.0.229", features = ["derive"] }
+tokio = { version = "1.54.1", features = ["rt-multi-thread", "macros", "net", "sync", "signal"] }
+tracing = "0.1.44"
+tracing-subscriber = "0.3.23"

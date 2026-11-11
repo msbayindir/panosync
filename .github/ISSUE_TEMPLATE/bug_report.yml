@@ -1,0 +1,49 @@
+name: Bug report
+description: Something doesn't work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! **Do not paste your key or clipboard contents.**
+        For security issues, please use [private reporting](https://github.com/msbayindir/panosync/security/advisories/new) instead.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: panosync version
+      description: Output of `panosync --version`
+      placeholder: panosync 0.1.0
+    validations:
+      required: true
+  - type: textarea
+    id: platforms
+    attributes:
+      label: Devices
+      description: OS and version of each device involved. On Linux, also the desktop and whether it runs Wayland or X11.
+      placeholder: |
+        macOS 15.5 (M1)
+        Ubuntu 24.04, GNOME, Wayland
+    validations:
+      required: true
+  - type: dropdown
+    id: relay
+    attributes:
+      label: How is the relay deployed?
+      options:
+        - Coolify
+        - Docker image from ghcr.io
+        - Built from source
+        - Other
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Output of `RUST_LOG=debug panosync` from the affected devices. panosync never logs clipboard contents, but check before pasting.
+      render: text
