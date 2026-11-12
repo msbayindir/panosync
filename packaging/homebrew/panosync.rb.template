@@ -3,7 +3,7 @@
 class Panosync < Formula
   desc "End-to-end encrypted clipboard sync between macOS, Linux and Windows"
   homepage "https://github.com/msbayindir/panosync"
-  version "@VERSION@"
+  # The version is read from the URLs (.../releases/download/v<version>/...).
   license any_of: ["MIT", "Apache-2.0"]
 
   on_macos do

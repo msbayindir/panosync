@@ -91,24 +91,26 @@ jobs:
             Linux-x86_64) target=x86_64-unknown-linux-gnu ;;
             Linux-aarch64) target=aarch64-unknown-linux-gnu ;;
           esac
-          mkdir -p dist
-          tar -C target/release -czf "dist/panosync-$target.tar.gz" panosync
-          for t in aarch64-apple-darwin x86_64-apple-darwin aarch64-unknown-linux-gnu x86_64-unknown-linux-gnu; do
-            if [ "$t" = "$target" ]; then (cd dist && shasum -a 256 "panosync-$t.tar.gz"); else printf '%064d  panosync-%s.tar.gz\n' 0 "$t"; fi
-          done > dist/SHA256SUMS
           version="$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[] | select(.name == "panosync") | .version')"
+          # Same layout as a GitHub release, so Homebrew can read the version from the URL.
+          dist="$PWD/dist/releases/download/v$version"
+          mkdir -p "$dist"
+          tar -C target/release -czf "$dist/panosync-$target.tar.gz" panosync
+          for t in aarch64-apple-darwin x86_64-apple-darwin aarch64-unknown-linux-gnu x86_64-unknown-linux-gnu; do
+            if [ "$t" = "$target" ]; then (cd "$dist" && shasum -a 256 "panosync-$t.tar.gz"); else printf '%064d  panosync-%s.tar.gz\n' 0 "$t"; fi
+          done > "$dist/SHA256SUMS"
 
           brew tap-new --no-git panosync/ci
           # Homebrew refuses to load formulae from non-official taps until they are trusted.
           # (`brew install <user>/<tap>/<formula>` trusts the formula automatically; audit does not.)
-          brew trust --tap panosync/ci
+          if brew commands | grep -qx trust; then brew trust --tap panosync/ci; fi
           formula="$(brew --repository panosync/ci)/Formula/panosync.rb"
           # Lint the formula as it will be published (release URLs)...
-          packaging/homebrew/render-formula.sh "$version" dist/SHA256SUMS > "$formula"
+          packaging/homebrew/render-formula.sh "$version" "$dist/SHA256SUMS" > "$formula"
           brew style panosync/ci/panosync
           brew audit --strict --formula panosync/ci/panosync
           # ...then install it from the local archive.
-          packaging/homebrew/render-formula.sh "$version" dist/SHA256SUMS "file://$PWD/dist" > "$formula"
+          packaging/homebrew/render-formula.sh "$version" "$dist/SHA256SUMS" "file://$dist" > "$formula"
           brew install panosync/ci/panosync
           brew test panosync/ci/panosync
-          panosync --version
+          panosync --version | grep -F "$version"

@@ -3,7 +3,8 @@
 #
 #   packaging/homebrew/render-formula.sh <version without v> <SHA256SUMS> [base url] > panosync.rb
 #
-# The base URL defaults to the GitHub release download URL for that version.
+# The base URL defaults to the GitHub release download URL for that version. Homebrew reads the
+# version from the URL, so a custom base URL must end in .../releases/download/v<version>.
 set -eu
 
 version="$1"
@@ -14,8 +15,12 @@ template="$(dirname "$0")/panosync.rb.template"
 case "$version" in
     v*) echo "render-formula.sh: pass the version without the leading v" >&2; exit 1 ;;
 esac
+case "$base" in
+    */releases/download/v"$version") ;;
+    *) echo "render-formula.sh: base URL must end in /releases/download/v$version" >&2; exit 1 ;;
+esac
 
-script="s|@VERSION@|$version|g; s|@BASE_URL@|$base|g"
+script="s|@BASE_URL@|$base|g"
 for target in aarch64-apple-darwin x86_64-apple-darwin aarch64-unknown-linux-gnu x86_64-unknown-linux-gnu; do
     sha="$(awk -v f="panosync-$target.tar.gz" '$2 == f || $2 == "*" f { print $1 }' "$sums")"
     case "$sha" in
@@ -27,6 +32,6 @@ done
 
 formula="$(sed "$script" "$template")"
 case "$formula" in
-    *@VERSION@*|*@BASE_URL@*|*@SHA_*) echo "render-formula.sh: unfilled placeholder in the formula" >&2; exit 1 ;;
+    *@BASE_URL@*|*@SHA_*) echo "render-formula.sh: unfilled placeholder in the formula" >&2; exit 1 ;;
 esac
 printf '%s\n' "$formula"
