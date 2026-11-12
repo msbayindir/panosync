@@ -99,6 +99,9 @@ jobs:
           version="$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[] | select(.name == "panosync") | .version')"
 
           brew tap-new --no-git panosync/ci
+          # Homebrew refuses to load formulae from non-official taps until they are trusted.
+          # (`brew install <user>/<tap>/<formula>` trusts the formula automatically; audit does not.)
+          brew trust --tap panosync/ci
           formula="$(brew --repository panosync/ci)/Formula/panosync.rb"
           # Lint the formula as it will be published (release URLs)...
           packaging/homebrew/render-formula.sh "$version" dist/SHA256SUMS > "$formula"
