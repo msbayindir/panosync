@@ -27,6 +27,7 @@ First public release. Speaks **protocol v1** (see [docs/architecture.md](docs/ar
   updated automatically when a release is published.
 - cargo-binstall metadata: `cargo binstall --git https://github.com/msbayindir/panosync panosync`.
 - systemd user service and launchd agent for the client, and a hardened systemd unit for the relay, in `packaging/`.
+- Logo (static and animated, light and dark), favicon and social preview in `assets/`; project page on GitHub Pages.
 - Documentation: `docs/architecture.md` (protocol v1 and threat model), `docs/self-hosting.md` (Coolify,
   Docker, systemd, Caddy, nginx, local network) and a VHS demo (`docs/demo.tape`, `docs/demo.gif`).
 

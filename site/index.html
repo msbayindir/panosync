@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>panosync: end-to-end encrypted clipboard sync</title>
+  <meta name="description" content="Copy on one computer, paste on another. panosync syncs the clipboard between macOS, Linux and Windows through a small relay you host, end-to-end encrypted.">
+  <meta property="og:title" content="panosync">
+  <meta property="og:description" content="Copy on one computer, paste on another. End-to-end encrypted clipboard sync with a self-hosted relay.">
+  <meta property="og:image" content="https://msbayindir.github.io/panosync/assets/social-preview.png">
+  <meta property="og:url" content="https://msbayindir.github.io/panosync/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="hero">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="assets/logo-animated-dark.svg">
+      <img class="logo" src="assets/logo-animated.svg" width="180" height="180" alt="panosync logo: a locked item travels from one clipboard to another">
+    </picture>
+    <h1>panosync</h1>
+    <p class="tagline">Copy on one computer, paste on another. <strong>End-to-end encrypted.</strong></p>
+    <p class="sub">Clipboard sync for macOS, Linux and Windows, even on different networks, through a tiny relay you host yourself.</p>
+    <p class="actions">
+      <a class="button primary" href="#install">Install</a>
+      <a class="button" href="https://github.com/msbayindir/panosync">GitHub</a>
+      <a class="button" href="https://github.com/msbayindir/panosync/releases/latest">Downloads</a>
+    </p>
+  </header>
+
+  <main>
+    <section class="demo">
+      <img src="assets/demo.gif" width="900" alt="Terminal recording: a relay and two clients; text copied on the laptop arrives on the desktop and back; after pause, a copied password is not sent" loading="lazy">
+    </section>
+
+    <section class="features">
+      <div><h3>One small binary</h3><p>The client is a single executable of 3–4 MB with no runtime. The relay is about 1.3 MB.</p></div>
+      <div><h3>Your own relay</h3><p>One Dockerfile that Coolify builds as-is, a prebuilt image on ghcr.io, or one systemd unit. No database, no state.</p></div>
+      <div><h3>No accounts</h3><p>Setup on the first device prints the one command to run on the others. That's the whole pairing.</p></div>
+      <div><h3>Text only, on purpose</h3><p>Copy on one machine, paste on another. Logs show byte counts, never your clipboard.</p></div>
+    </section>
+
+    <section id="how">
+      <h2>How it works</h2>
+      <ol class="steps">
+        <li><b>One key.</b> <code>panosync setup</code> on the first device generates a random 32-byte key that never leaves your devices.</li>
+        <li><b>Two derived values.</b> Each device derives an encryption key and a separate channel id from it with BLAKE3.</li>
+        <li><b>Encrypt, then send.</b> Every clipboard change is sealed with XChaCha20-Poly1305 and sent over <code>wss://</code>.</li>
+        <li><b>Blind relay.</b> The relay groups devices by channel id and forwards the bytes. It never sees the key or the text.</li>
+      </ol>
+      <p class="more">Full protocol and threat model: <a href="https://github.com/msbayindir/panosync/blob/main/docs/architecture.md">docs/architecture.md</a></p>
+    </section>
+
+    <section id="install">
+      <h2>Install</h2>
+      <h3>1. Run a relay</h3>
+      <pre><code>docker run -d --name panosync-relay --restart unless-stopped \
+  -p 8080:8080 ghcr.io/msbayindir/panosync-relay:latest</code></pre>
+      <p>Put a TLS reverse proxy in front of it (Caddy, nginx, Traefik), or deploy the repository's Dockerfile on Coolify.
+        All options: <a href="https://github.com/msbayindir/panosync/blob/main/docs/self-hosting.md">self-hosting guide</a>.</p>
+      <h3>2. Install the client</h3>
+      <pre><code># macOS and Linux
+brew install msbayindir/tap/panosync
+# or, without Homebrew
+curl -fsSL https://raw.githubusercontent.com/msbayindir/panosync/main/install.sh | sh</code></pre>
+      <p>Windows: download <code>panosync-x86_64-pc-windows-msvc.zip</code> from the <a href="https://github.com/msbayindir/panosync/releases/latest">latest release</a>.
+        Also available with <code>cargo binstall --git https://github.com/msbayindir/panosync panosync</code>.</p>
+      <h3>3. Pair and run</h3>
+      <pre><code># first device: generates the key and prints the next command
+panosync setup --server wss://relay.example.com
+# every other device
+panosync setup --server wss://relay.example.com --key &lt;your key&gt;
+# then, on each device
+panosync</code></pre>
+      <p>Copying a password? <code>panosync pause 5</code> stops sending for five minutes.</p>
+    </section>
+
+    <section id="security">
+      <h2>Security model</h2>
+      <div class="columns">
+        <div>
+          <h3>Protected</h3>
+          <ul>
+            <li>The text: end-to-end encrypted and authenticated (XChaCha20-Poly1305).</li>
+            <li>The key: the relay only sees a derived channel id.</li>
+            <li>Replays: random message ids and a 5-minute time window.</li>
+            <li>Transport: TLS on top of the end-to-end encryption.</li>
+            <li>Abuse: 1 MB per message, 16 devices per channel, 50 messages per 10 seconds.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Known limits</h3>
+          <ul>
+            <li>The relay sees IP addresses, timing and message sizes.</li>
+            <li>One shared key: no forward secrecy, no per-device revocation.</li>
+            <li>Passwords sync too; there is no password-manager detection yet. Use <code>pause</code>.</li>
+            <li>Text only (up to 512 KB), desktops only.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p><a href="https://github.com/msbayindir/panosync">GitHub</a> · <a href="https://github.com/msbayindir/panosync/releases">Releases</a> ·
+      <a href="https://github.com/msbayindir/panosync/blob/main/README.tr.md">Türkçe</a> · <a href="https://github.com/msbayindir/panosync/blob/main/SECURITY.md">Security</a></p>
+    <p>MIT OR Apache-2.0</p>
+  </footer>
+</body>
+</html>

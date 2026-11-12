@@ -1,22 +1,43 @@
-# panosync
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-animated-dark.svg">
+    <img src="assets/logo-animated.svg" alt="panosync logo: a locked item travels from one clipboard to another" width="168">
+  </picture>
+</p>
 
-[![CI](https://github.com/msbayindir/panosync/actions/workflows/ci.yml/badge.svg)](https://github.com/msbayindir/panosync/actions/workflows/ci.yml)
-[![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](#license)
+<h1 align="center">panosync</h1>
+
+<p align="center"><b>Copy on one computer, paste on another. End-to-end encrypted.</b></p>
+
+<p align="center">
+  <a href="https://github.com/msbayindir/panosync/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/msbayindir/panosync/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://github.com/msbayindir/panosync/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/msbayindir/panosync?sort=semver"></a>
+  <a href="#license"><img alt="License: MIT OR Apache-2.0" src="https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue"></a>
+  <img alt="Platforms: macOS, Linux, Windows" src="https://img.shields.io/badge/platforms-macOS%20%7C%20Linux%20%7C%20Windows-informational">
+</p>
+
+<p align="center"><b>English</b> · <a href="README.tr.md">Türkçe</a> · <a href="https://msbayindir.github.io/panosync/">Website</a></p>
+
+<p align="center"><img src="docs/demo.gif" alt="A relay and two clients in tmux: text copied on the laptop is pasted on the desktop and back; after pause, a copied password is not sent" width="900"></p>
+<p align="center"><sub>Terminal recording made with <a href="docs/demo.md">VHS</a>: a local relay and two clients with separate clipboards.</sub></p>
+
+```bash
+brew install msbayindir/tap/panosync      # macOS and Linux; or, without Homebrew:
+curl -fsSL https://raw.githubusercontent.com/msbayindir/panosync/main/install.sh | sh
+```
 
 **panosync** keeps the clipboard in sync between your macOS, Linux and Windows machines, even when they are
-on different networks. Everything is end-to-end encrypted on your devices; the small relay server in
-between only forwards bytes it cannot read.
-
-<p align="center"><img src="docs/demo.gif" alt="A relay and two clients in tmux: text copied on the laptop is pasted on the desktop and back; after pause, a copied password is not sent" width="960"></p>
-
-<sub>Recorded with <a href="docs/demo.md">VHS</a>: a local relay and two clients with separate clipboards.</sub>
-
-[Türkçe README](README.tr.md)
+on different networks. Everything is end-to-end encrypted on your devices; the small relay server you host
+in between only forwards bytes it cannot read.
 
 - **One small binary per side.** The client is a single 3–4 MB executable with no runtime; the relay is about 1.3 MB.
 - **Self-hosted relay in one step.** A Dockerfile that Coolify (or any Docker host) builds as-is, or a prebuilt image on `ghcr.io`.
 - **No accounts, no web UI.** One command on the first device prints the one command to run on the others.
 - **Text only, on purpose.** Copy on one machine, paste on another. That's it.
+
+**Contents:** [How it works](#how-it-works) · [Quick start](#quick-start) · [Commands](#commands) ·
+[Security model](#security-model) · [Compared to alternatives](#compared-to-alternatives) ·
+[Troubleshooting](#troubleshooting) · [Development](#development) · [License](#license)
 
 ## How it works
 
@@ -290,7 +311,9 @@ client/src/crypto.rs      key derivation and encryption
 client/src/pause.rs       the pause state file
 client/tests/             end-to-end test against a real relay, CLI tests
 relay/src/                the relay (WebSocket fan-out, limits, /health)
-packaging/                start-at-login files (systemd, launchd)
+packaging/                start-at-login files (systemd, launchd), Homebrew formula template
+assets/                   logo, favicon, social preview
+site/                     the GitHub Pages site
 Dockerfile                relay image (used by Coolify and ghcr.io)
 ```
 

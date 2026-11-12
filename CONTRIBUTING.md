@@ -2,6 +2,14 @@
 
 Thanks for your interest in panosync! Bug reports, fixes and small focused improvements are very welcome.
 
+## Where to start
+
+- **Questions, ideas, setups:** [GitHub Discussions](https://github.com/msbayindir/panosync/discussions).
+- **Bugs and feature requests:** [issues](https://github.com/msbayindir/panosync/issues), using the templates.
+- **First contribution?** Look for issues labelled
+  [`good first issue`](https://github.com/msbayindir/panosync/labels/good%20first%20issue). Platform-specific
+  issues are labelled `platform: macos`, `platform: linux` and `platform: windows`.
+
 ## Before you start
 
 - For anything bigger than a small fix, please open an issue first so we can agree on the approach.
@@ -33,6 +41,7 @@ The tests do not touch the real clipboard.
   Each module starts with a short comment explaining what it does; keep it accurate.
 - Add tests for new behaviour. Keep dependencies to a minimum.
 - Add a line to `CHANGELOG.md` under *Unreleased*.
+- Pull requests use a short template; please fill in how you tested the change.
 
 ## License
 
