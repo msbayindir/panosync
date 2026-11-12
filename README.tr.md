@@ -30,7 +30,7 @@ curl -fsSL https://raw.githubusercontent.com/msbayindir/panosync/main/install.sh
 farklı ağlarda olabilir. Her şey cihazlarında uçtan uca şifrelenir; aradaki, senin barındırdığın küçük aracı
 sunucu sadece okuyamadığı baytları iletir.
 
-- **Her tarafta tek küçük dosya.** İstemci 3–4 MB'lık, çalışma zamanı gerektirmeyen tek bir dosya; aracı sunucu yaklaşık 1,3 MB.
+- **Her tarafta tek küçük dosya.** İstemci 3,1–4,5 MB'lık, çalışma zamanı gerektirmeyen tek bir dosya; aracı sunucu yaklaşık 1,4 MB.
 - **Tek adımda kendi sunucunda.** Coolify'ın (ya da herhangi bir Docker sunucusunun) olduğu gibi derlediği bir Dockerfile veya `ghcr.io`'da hazır imaj.
 - **Hesap yok, web paneli yok.** İlk cihazdaki tek komut, diğer cihazlarda çalıştırılacak tek komutu yazar.
 - **Bilerek sadece metin.** Bir makinede kopyala, diğerinde yapıştır. Bu kadar.
@@ -247,8 +247,9 @@ panosync tek bir iş yapar. Başka araçlar çok daha fazlasını yapıyor ve sa
 
 panosync'in sunduğu fark esas olarak **hafiflik ve sadelik**:
 
-- **Hafif:** istemci 3–4 MB'lık tek bir dosya, aracı yaklaşık 1,3 MB (release derlemeleri: istemci macOS arm64'te 3,0 MB,
-  Linux arm64'te 3,7 MB); çalışma zamanı, veritabanı ya da anahtar dışında ayar yok.
+- **Hafif:** istemci 3,1–4,5 MB'lık tek bir dosya, aracı yaklaşık 1,4 MB (v0.1.0 binary'leri: macOS arm64'te 3,1 MB,
+  macOS Intel'de 3,5 MB, Linux arm64'te 3,8 MB, Windows'ta 4,0 MB, Linux x86_64'te 4,5 MB; sıkıştırılmış indirmeler
+  1,6–2,1 MB); çalışma zamanı, veritabanı ya da anahtar dışında ayar yok.
 - **Kendi sunucunda kolay:** aracı, Coolify'ın olduğu gibi derlediği tek bir Dockerfile, tek bir `docker run` ya da tek bir
   systemd birimi. Durum tutmadığı için yedeklenecek ya da taşınacak bir şey yok.
 - **Kullanımı sade:** hesap yok, ayar ekranı yok; ilk cihazdaki `panosync setup` diğerleri için tek komutu yazar.

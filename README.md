@@ -30,7 +30,7 @@ curl -fsSL https://raw.githubusercontent.com/msbayindir/panosync/main/install.sh
 on different networks. Everything is end-to-end encrypted on your devices; the small relay server you host
 in between only forwards bytes it cannot read.
 
-- **One small binary per side.** The client is a single 3–4 MB executable with no runtime; the relay is about 1.3 MB.
+- **One small binary per side.** The client is a single 3.1–4.5 MB executable with no runtime; the relay is about 1.4 MB.
 - **Self-hosted relay in one step.** A Dockerfile that Coolify (or any Docker host) builds as-is, or a prebuilt image on `ghcr.io`.
 - **No accounts, no web UI.** One command on the first device prints the one command to run on the others.
 - **Text only, on purpose.** Copy on one machine, paste on another. That's it.
@@ -255,8 +255,9 @@ mature project with many more features.
 
 What panosync offers instead is mainly **size and simplicity**:
 
-- **Lightweight:** the client is a single binary of 3–4 MB and the relay about 1.3 MB (release builds:
-  client 3.0 MB on macOS arm64 and 3.7 MB on Linux arm64), with no runtime, database or configuration
+- **Lightweight:** the client is a single binary of 3.1–4.5 MB and the relay about 1.4 MB (v0.1.0 release
+  binaries: 3.1 MB on macOS arm64, 3.5 MB on macOS Intel, 3.8 MB on Linux arm64, 4.0 MB on Windows and
+  4.5 MB on Linux x86_64; downloads are 1.6–2.1 MB compressed), with no runtime, database or configuration
   beyond the key.
 - **Easy to self-host:** the relay is one Dockerfile that Coolify builds as-is, or one `docker run`, or one
   systemd unit. It keeps no state, so there is nothing to back up or migrate.
