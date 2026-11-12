@@ -9,7 +9,7 @@ so security reports are taken seriously and are welcome.
 
 Report privately through GitHub: open the repository's **Security** tab and click
 **Report a vulnerability** ([direct link](https://github.com/msbayindir/panosync/security/advisories/new)).
-Only the maintainers can see the report.
+Only the maintainers can see the report. Private vulnerability reporting is enabled for this repository.
 
 Please include:
 

@@ -22,6 +22,18 @@ body:
       placeholder: panosync 0.1.0
     validations:
       required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Where does it happen?
+      multiple: true
+      options:
+        - macOS
+        - Linux
+        - Windows
+        - Relay server
+    validations:
+      required: true
   - type: textarea
     id: platforms
     attributes:
