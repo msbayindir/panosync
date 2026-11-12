@@ -64,3 +64,57 @@ jobs:
           push: false
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  homebrew:
+    name: Homebrew formula (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: "1"
+      HOMEBREW_NO_ANALYTICS: "1"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo build --release --locked -p panosync
+      - name: Render the formula from a local archive and test it
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$RUNNER_OS" = Linux ]; then eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"; fi
+          case "$RUNNER_OS-$(uname -m)" in
+            macOS-arm64) target=aarch64-apple-darwin ;;
+            macOS-x86_64) target=x86_64-apple-darwin ;;
+            Linux-x86_64) target=x86_64-unknown-linux-gnu ;;
+            Linux-aarch64) target=aarch64-unknown-linux-gnu ;;
+          esac
+          version="$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[] | select(.name == "panosync") | .version')"
+          # Same layout as a GitHub release, so Homebrew can read the version from the URL.
+          dist="$PWD/dist/releases/download/v$version"
+          mkdir -p "$dist"
+          tar -C target/release -czf "$dist/panosync-$target.tar.gz" panosync
+          for t in aarch64-apple-darwin x86_64-apple-darwin aarch64-unknown-linux-gnu x86_64-unknown-linux-gnu; do
+            if [ "$t" = "$target" ]; then (cd "$dist" && shasum -a 256 "panosync-$t.tar.gz"); else printf '%064d  panosync-%s.tar.gz\n' 0 "$t"; fi
+          done > "$dist/SHA256SUMS"
+
+          brew tap-new --no-git panosync/ci
+          # Homebrew refuses to load formulae from non-official taps until they are trusted.
+          # (`brew install <user>/<tap>/<formula>` trusts the formula automatically; audit does not.)
+          if brew trust --help >/dev/null 2>&1; then brew trust --tap panosync/ci; fi
+          formula="$(brew --repository panosync/ci)/Formula/panosync.rb"
+          # Lint the formula as it will be published (release URLs)...
+          packaging/homebrew/render-formula.sh "$version" "$dist/SHA256SUMS" > "$formula"
+          brew style panosync/ci/panosync
+          brew audit --strict --formula panosync/ci/panosync
+          # ...then install it from the local archive.
+          packaging/homebrew/render-formula.sh "$version" "$dist/SHA256SUMS" "file://$dist" > "$formula"
+          # Homebrew reads the version correctly from github.com release URLs, but not from a file://
+          # path with "x86_64" in the file name, so the local test copy states it explicitly.
+          perl -0pi -e 's/(  homepage "[^"]+"\n)/$1  version "'"$version"'"\n/' "$formula"
+          grep -n '^  version ' "$formula"
+          brew install panosync/ci/panosync
+          brew test panosync/ci/panosync
+          panosync --version | grep -F "$version"

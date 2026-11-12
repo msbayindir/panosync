@@ -2,7 +2,8 @@ name: Release
 
 # Runs when a version tag is pushed (e.g. `git tag v0.1.0 && git push origin v0.1.0`).
 # Builds the client for every platform, creates a *draft* GitHub Release with the archives
-# and SHA256SUMS, and pushes the relay image to ghcr.io. Publish the draft by hand.
+# and SHA256SUMS, and pushes the relay image to ghcr.io. Publish the draft by hand; publishing triggers
+# homebrew.yml, which updates the formula in msbayindir/homebrew-tap.
 
 on:
   push:

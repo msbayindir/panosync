@@ -1,0 +1,58 @@
+name: Homebrew
+
+# Updates the formula in msbayindir/homebrew-tap when a release is *published* (not while it is a
+# draft: draft assets cannot be downloaded by Homebrew). Can also be run by hand for a tag.
+#
+# Needs the repository secret HOMEBREW_TAP_TOKEN: a fine-grained personal access token with
+# "Contents: Read and write" on msbayindir/homebrew-tap only.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to publish to the tap, e.g. v0.1.0
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  formula:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Download SHA256SUMS of the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern SHA256SUMS --dir dist
+
+      - name: Render the formula
+        run: |
+          packaging/homebrew/render-formula.sh "${TAG#v}" dist/SHA256SUMS > panosync.rb
+          cat panosync.rb
+
+      - uses: actions/checkout@v5
+        with:
+          repository: msbayindir/homebrew-tap
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          path: tap
+
+      - name: Commit and push to the tap
+        working-directory: tap
+        run: |
+          mkdir -p Formula
+          cp ../panosync.rb Formula/panosync.rb
+          git add Formula/panosync.rb
+          if git diff --cached --quiet; then
+            echo "Formula already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "panosync ${TAG#v}"
+          git push
