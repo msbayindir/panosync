@@ -103,7 +103,7 @@ jobs:
           brew tap-new --no-git panosync/ci
           # Homebrew refuses to load formulae from non-official taps until they are trusted.
           # (`brew install <user>/<tap>/<formula>` trusts the formula automatically; audit does not.)
-          if brew commands | grep -qx trust; then brew trust --tap panosync/ci; fi
+          if brew trust --help >/dev/null 2>&1; then brew trust --tap panosync/ci; fi
           formula="$(brew --repository panosync/ci)/Formula/panosync.rb"
           # Lint the formula as it will be published (release URLs)...
           packaging/homebrew/render-formula.sh "$version" "$dist/SHA256SUMS" > "$formula"
@@ -111,6 +111,10 @@ jobs:
           brew audit --strict --formula panosync/ci/panosync
           # ...then install it from the local archive.
           packaging/homebrew/render-formula.sh "$version" "$dist/SHA256SUMS" "file://$dist" > "$formula"
+          # Homebrew reads the version correctly from github.com release URLs, but not from a file://
+          # path with "x86_64" in the file name, so the local test copy states it explicitly.
+          perl -0pi -e 's/(  homepage "[^"]+"\n)/$1  version "'"$version"'"\n/' "$formula"
+          grep -n '^  version ' "$formula"
           brew install panosync/ci/panosync
           brew test panosync/ci/panosync
           panosync --version | grep -F "$version"
