@@ -30,7 +30,13 @@ docker run -d --name panosync-relay --restart unless-stopped -p 8080:8080 ghcr.i
 
 TLS için önüne bir ters vekil (Caddy, nginx, Traefik) koy. Bütün seçenekler (Coolify, Docker, systemd, Caddy, nginx, sadece yerel ağ): [docs/self-hosting.md](docs/self-hosting.md).
 
-**2. İstemci (Mac ve Linux).**
+**2. İstemci (Mac ve Linux).** Homebrew ile:
+
+```bash
+brew install msbayindir/tap/panosync
+```
+
+ya da kurulum betiğiyle:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/msbayindir/panosync/main/install.sh | sh
@@ -38,6 +44,7 @@ curl -fsSL https://raw.githubusercontent.com/msbayindir/panosync/main/install.sh
 
 Betik doğru binary'yi seçer, SHA-256 özetini doğrular ve `~/.local/bin` içine kurar.
 Windows için [son sürümden](https://github.com/msbayindir/panosync/releases/latest) `.zip` dosyasını indir.
+cargo-binstall kullanıyorsan: `cargo binstall --git https://github.com/msbayindir/panosync panosync`.
 
 **3. Cihazları eşleştir.** İlk cihazda:
 
@@ -49,7 +56,7 @@ panosync setup --server wss://<alan adın>
 Bu anahtarı bilen herkes panonu okuyabilir; sadece kendi cihazlarına güvenli bir yoldan aktar.
 
 **4. Çalıştır.** Her cihazda `panosync`. Günlükte sadece bayt sayıları görünür (`sent (26 bytes)`), içerik hiçbir zaman yazılmaz.
-Oturum açınca otomatik başlatmak için `packaging/` klasöründeki systemd ve launchd dosyalarının başındaki adımları izle.
+Oturum açınca otomatik başlatmak için Homebrew ile kurduysan `brew services start panosync`, değilse `packaging/` klasöründeki systemd ve launchd dosyalarının başındaki adımları izle.
 
 ## Komutlar
 

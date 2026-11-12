@@ -23,6 +23,9 @@ First public release. Speaks **protocol v1** (see [docs/architecture.md](docs/ar
 - Prebuilt binaries for macOS (arm64, x86_64), Linux (x86_64, aarch64) and Windows (x86_64), with SHA-256 checksums.
 - Relay Docker image `ghcr.io/msbayindir/panosync-relay` for `linux/amd64` and `linux/arm64`.
 - `install.sh` for macOS and Linux.
+- Homebrew formula in `msbayindir/homebrew-tap` (`brew install msbayindir/tap/panosync`, with `brew services`),
+  updated automatically when a release is published.
+- cargo-binstall metadata: `cargo binstall --git https://github.com/msbayindir/panosync panosync`.
 - systemd user service and launchd agent for the client, and a hardened systemd unit for the relay, in `packaging/`.
 - Documentation: `docs/architecture.md` (protocol v1 and threat model), `docs/self-hosting.md` (Coolify,
   Docker, systemd, Caddy, nginx, local network) and a VHS demo (`docs/demo.tape`, `docs/demo.gif`).

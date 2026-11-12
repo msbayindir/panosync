@@ -88,7 +88,16 @@ For nginx, the WebSocket `Upgrade` headers are required; see [docs/self-hosting.
 
 ### 2. Install the client
 
-**macOS and Linux**
+**Homebrew (macOS and Linux)**
+
+```bash
+brew install msbayindir/tap/panosync
+```
+
+The formula installs the same prebuilt binaries as the release page, and `brew services start panosync`
+starts panosync at login.
+
+**Install script (macOS and Linux)**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/msbayindir/panosync/main/install.sh | sh
@@ -105,6 +114,9 @@ pin a version with `PANOSYNC_VERSION=v0.1.0`). Read it first if you like: [insta
 `x86_64-unknown-linux-gnu`, `aarch64-unknown-linux-gnu` and `x86_64-pc-windows-msvc`, plus `SHA256SUMS`.
 The binaries are not code-signed. On macOS, if you downloaded with a browser, clear the quarantine flag once:
 `xattr -d com.apple.quarantine ./panosync`.
+
+**cargo-binstall:** `cargo binstall --git https://github.com/msbayindir/panosync panosync` downloads the
+prebuilt binary for your platform from the release (panosync is not on crates.io, hence `--git`).
 
 **From source:** `cargo install --git https://github.com/msbayindir/panosync panosync` (Rust 1.88+).
 
@@ -137,6 +149,7 @@ Copy something on one machine and paste it on another. The log shows `sent (26 b
 
 **Start at login**
 
+- **Homebrew (macOS and Linux):** `brew services start panosync`.
 - **Linux (systemd):** see the steps at the top of [packaging/panosync.service](packaging/panosync.service).
 - **macOS (launchd):** see the steps at the top of [packaging/com.msbayindir.panosync.plist](packaging/com.msbayindir.panosync.plist).
 - **Windows:** press <kbd>Win</kbd>+<kbd>R</kbd>, run `shell:startup` and put a shortcut to `panosync.exe` in that folder.
