@@ -28,3 +28,16 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 
 [dev-dependencies]
 panosync-relay = { path = "../relay" }
+
+# cargo-binstall: download the prebuilt archives from GitHub Releases instead of compiling.
+# The file names must match what .github/workflows/release.yml uploads.
+[package.metadata.binstall]
+pkg-url = "{ repo }/releases/download/v{ version }/{ name }-{ target }.tar.gz"
+bin-dir = "{ bin }{ binary-ext }"
+pkg-fmt = "tgz"
+# Do not fall back to third-party prebuilt binaries.
+disabled-strategies = ["quick-install"]
+
+[package.metadata.binstall.overrides.x86_64-pc-windows-msvc]
+pkg-url = "{ repo }/releases/download/v{ version }/{ name }-{ target }.zip"
+pkg-fmt = "zip"
